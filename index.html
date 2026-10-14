@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AMINE LAB — Hóa học 12</title>
+<style>
+:root{--navy:#1b3b6f;--blue:#2b54c7;--cyan:#00b4d8;--paper:#f4f7fc;--ink:#102a43;--muted:#627d98;--line:#d9e2ec;--white:#fff;--radius:16px;--shadow:0 12px 32px rgba(16,42,67,.08)}
+*{box-sizing:border-box}html{font-size:17px;scroll-behavior:smooth}body{margin:0;font-family:"Be Vietnam Pro",system-ui,sans-serif;background:var(--paper);color:var(--ink);line-height:1.6}
+.container{width:min(1200px,calc(100% - 40px));margin:auto}
+header{background:linear-gradient(135deg,#1b3b6f,#2b54c7);color:white;padding:30px 0;border-radius:0 0 24px 24px;box-shadow:var(--shadow)}
+h1{margin:0 0 5px;font-size:2.2rem}p{margin:0 0 10px;color:var(--muted)}
+.nav-tabs{display:flex;gap:10px;margin-top:20px;flex-wrap:wrap}
+.nav-tabs button{background:rgba(255,255,255,.15);border:0;color:white;padding:10px 18px;border-radius:10px;font-weight:700;cursor:pointer;transition:.2s}
+.nav-tabs button.active{background:white;color:var(--navy)}
+main{padding:40px 0}
+.card{background:white;border:1px solid var(--line);border-radius:var(--radius);padding:24px;box-shadow:var(--shadow);margin-bottom:24px}
+h2{color:var(--navy);margin-top:0;font-size:1.5rem}h3{color:var(--navy)}
+.eq{background:#edf2f7;border-left:4px solid var(--cyan);padding:12px 16px;border-radius:8px;font-family:monospace;font-size:1.05rem;margin:12px 0;color:#1a365d}
+.lab-container{display:grid;grid-template-columns:320px 1fr;gap:24px;align-items:start}
+@media(max-width:850px){.lab-container{grid-template-columns:1fr}}
+.lab-panel{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow)}
+.lab-stage{background:radial-gradient(circle at 50% 60%,#e2e8f0,#cbd5e1);border-radius:var(--radius);min-height:420px;position:relative;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding:30px;overflow:hidden;border:1px solid var(--line)}
+/* Đồ họa ống nghiệm & Dụng cụ chuyên nghiệp */
+.stand-structure{position:absolute;bottom:40px;width:160px;height:200px;border-bottom:10px solid #4a5568;border-left:8px solid #718096;border-right:8px solid #718096;border-radius:0 0 6px 6px}
+.test-tube{position:relative;width:70px;height:160px;border:3px solid rgba(255,255,255,.8);border-top:none;border-radius:0 0 35px 35px;background:linear-gradient(100deg,rgba(255,255,255,.6),rgba(255,255,255,.1) 50%,rgba(0,0,0,.1));overflow:hidden;box-shadow:inset 5px 0 10px rgba(255,255,255,.5), 0 10px 20px rgba(0,0,0,.15);z-index:3}
+.tube-liquid{position:absolute;bottom:0;left:0;right:0;height:55%;background:rgba(53,162,235,.5);transition:all 1s ease}
+.tube-liquid.litmus-blue{background:rgba(49,130,206,.85)}
+.tube-liquid.milky{background:rgba(255,255,255,.95)}
+.precipitate{position:absolute;bottom:0;left:0;right:0;height:0;background:#fff;transition:height 1s ease}
+.precipitate.on{height:30%}
+/* Giấy quỳ tím ẩm */
+.litmus-paper{position:absolute;top:60px;width:14px;height:70px;background:#b794f4;border-radius:3px;box-shadow:0 4px 10px rgba(0,0,0,.2);transition:all 1s ease;z-index:4;transform-origin:top center}
+.litmus-paper.dipped{top:110px;background:#3182ce} /* Hóa xanh khi chạm hơi/dung dịch amine */
+.btn-lab{width:100%;padding:12px;background:var(--navy);color:white;border:0;border-radius:10px;font-weight:700;cursor:pointer;margin-top:10px;transition:.2s}
+.btn-lab:hover{background:var(--blue)}
+select,input{width:100%;padding:10px;border:1px solid var(--line);border-radius:8px;margin-top:6px;margin-bottom:14px;font:inherit}
+.quiz-opt{display:block;width:100%;text-align:left;background:white;border:1px solid var(--line);padding:14px;border-radius:10px;margin-bottom:10px;cursor:pointer;font:inherit;transition:.2s}
+.quiz-opt:hover{border-color:var(--cyan);background:#f0fdf4}
+.quiz-opt.correct{background:#c6f6d5;border-color:#38a169;color:#22543d}
+.quiz-opt.incorrect{background:#fed7d7;border-color:#e53e3e;color:#742a2a}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--ink);color:white;padding:12px 24px;border-radius:10px;box-shadow:var(--shadow);opacity:0;transition:.3s;pointer-events:none;z-index:1000}
+.toast.show{opacity:1}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="container">
+    <h1>AMINE LAB — Hóa học 12</h1>
+    <p>Chương 3: Hợp chất chứa nitrogen · Trường THPT Chuyên Hùng Vương</p>
+    <div class="nav-tabs">
+      <button class="active" onclick="switchTab('theory', this)">Lý thuyết ghi bài</button>
+      <button onclick="switchTab('lab', this)">Phòng thí nghiệm ảo 3D</button>
+      <button onclick="switchTab('quiz', this)">Bài tập trắc nghiệm (4 câu)</button>
+    </div>
+  </div>
+</header>
+
+<main class="container">
+  <!-- PHẦN 1: LÝ THUYẾT -->
+  <section id="theory" class="tab-content">
+    <div class="card">
+      <h2>IV. Tính chất hóa học</h2>
+      <h3>1) Tính base</h3>
+      <p>Amine có tính base yếu: nguyên tử nitrogen dùng cặp electron riêng nhận proton (\(H^+\)) từ nước[cite: 14].</p>
+      <div class="eq">RNH₂ + H₂O ⇌ RNH₃⁺ + OH⁻[cite: 14]</div>
+      <p><strong>Thử tính base với quỳ tím ẩm:</strong> Alkylamine (như methylamine) làm quỳ tím ẩm hóa xanh; aniline do tính base rất yếu nên không làm đổi màu quỳ tím ẩm[cite: 14].</p>
+      
+      <h3>2) Phản ứng với dung dịch acid</h3>
+      <p>Amine tác dụng với acid tạo muối ammonium[cite: 14].</p>
+      <div class="eq">CH₃NH₂ + HCl → CH₃NH₃Cl (methylammonium chloride)[cite: 14]</div>
+      <p><em>Ứng dụng thực tế:</em> Dùng giấm hoặc chanh (acid) để khử mùi tanh của cá (do các amine gây ra)[cite: 14].</p>
+
+      <h3>3) Phản ứng với dung dịch muối và tạo phức</h3>
+      <p>Alkylamine tác dụng với dung dịch muối tạo hydroxide kết tủa[cite: 14], với \(Cu(OH)_2\) hoặc dung dịch muối đồng tạo phức màu xanh lam đặc trưng[cite: 15, 16].</p>
+      <div class="eq">Cu(OH)₂ + 4CH₃NH₂ → [Cu(CH₃NH₂₄](OH)₂ (xanh lam)[cite: 14]</div>
+
+      <h3>4) Phản ứng với nitrous acid (\(HNO_2\))</h3>
+      <p>Alkylamine bậc 1 tác dụng với \(HNO_2\) ở nhiệt độ thường tạo alcohol và giải phóng khí \(N_2\)[cite: 14]. Aniline tác dụng ở nhiệt độ thấp (\(0-5^\circ C\)) tạo muối diazonium[cite: 14].</p>
+
+      <h3>5) Phản ứng thế ở nhân thơm của aniline với nước bromine</h3>
+      <p>Nhóm \(-NH_2\) hoạt hóa vòng benzene, phản ứng thế ưu tiên ở vị trí ortho và para. Nhỏ nước bromine vào dung dịch aniline thấy mất màu và tạo kết tủa trắng 2,4,6-tribromoaniline[cite: 14].</p>
+      <div class="eq">C₆H₅NH₂ + 3Br₂ → C₆H₂Br₃NH₂↓ + 3HBr[cite: 14]</div>
+    </div>
+  </section>
+
+  <!-- PHẦN 2: PHÒNG THÍ NGHIỆM ẢO -->
+  <section id="lab" class="tab-content" style="display:none">
+    <div class="lab-container">
+      <div class="lab-panel">
+        <h3>Chọn thí nghiệm</h3>
+        <label>Thí nghiệm tương tác:</label>
+        <select id="labSelect" onchange="updateLab()">
+          <option value="litmus">1. Thử quỳ tím ẩm với Methylamine</option>
+          <option value="acid">2. Aniline tác dụng với HCl</option>
+          <option value="copper">3. Methylamine với dung dịch CuSO₄ (Tạo phức)</option>
+          <option value="bromine">4. Aniline tác dụng với nước Bromine</option>
+        </select>
+        <div id="labDesc" style="font-size:0.9rem; color:var(--muted); margin-top:10px;">
+          Giấy quỳ tím ẩm được treo phía trên ống nghiệm chứa dung dịch methylamine. Khi tiếp xúc hơi/dung dịch, quỳ tím chuyển sang màu xanh do có tính base.
+        </div>
+        <button class="btn-lab" onclick="runLabAnimation()">Tiến hành thí nghiệm ▶</button>
+      </div>
+
+      <div class="lab-stage">
+        <!-- Mô phỏng Quỳ tím ẩm -->
+        <div class="litmus-paper" id="litmusPaper"></div>
+        <div class="stand-structure"></div>
+        <div class="test-tube">
+          <div class="tube-liquid" id="tubeLiquid"></div>
+          <div class="precipitate" id="tubePpt"></div>
+        </div>
+        <div id="labStatus" style="margin-top:20px; font-weight:700; color:var(--navy)">Trạng thái: Sẵn sàng thực nghiệm</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PHẦN 3: BÀI TẬP 4 CÂU -->
+  <section id="quiz" class="tab-content" style="display:none">
+    <div class="card">
+      <h2>Bài tập ôn tập trắc nghiệm</h2>
+      <div id="quizContainer"></div>
+      <div id="quizResult" style="margin-top:20px; font-weight:bold; font-size:1.1rem; color:var(--navy)"></div>
+    </div>
+  </section>
+</main>
+
+<div class="toast" id="toast">Đã cập nhật thành công!</div>
+
+<script>
+function switchTab(id, btn){
+  document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
+  document.getElementById(id).style.display = 'block';
+  document.querySelectorAll('.nav-tabs button').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// Xử lý phòng thí nghiệm đồ họa nâng cao
+function updateLab(){
+  const val = document.getElementById('labSelect').value;
+  const paper = document.getElementById('litmusPaper');
+  const liq = document.getElementById('tubeLiquid');
+  const ppt = document.getElementById('tubePpt');
+  
+  paper.style.display = 'none';
+  ppt.className = 'precipitate';
+  liq.className = 'tube-liquid';
+
+  if(val === 'litmus'){
+    paper.style.display = 'block';
+    paper.style.top = '60px';
+    paper.style.background = '#b794f4'; // Màu quỳ tím ban đầu
+    liq.style.background = 'rgba(53,162,235,.4)';
+    document.getElementById('labDesc').textContent = 'Giấy quỳ tím ẩm được treo trên miệng ống nghiệm chứa dung dịch methylamine.';
+  } else if(val === 'acid'){
+    liq.style.background = 'rgba(235,235,235,.6)';
+    document.getElementById('labDesc').textContent = 'Aniline ít tan, khi cho HCl vào tạo muối phenylammonium chloride tan trong suốt.';
+  } else if(val === 'copper'){
+    liq.style.background = 'rgba(53,162,235,.7)';
+    document.getElementById('labDesc').textContent = 'Methylamine dư hòa tan kết tủa tạo dung dịch phức chất màu xanh lam đặc trưng.';
+  } else if(val === 'bromine'){
+    liq.style.background = 'rgba(214,158,46,.6)';
+    document.getElementById('labDesc').textContent = 'Nhỏ nước bromine vào aniline tạo kết tủa trắng 2,4,6-tribromoaniline.';
+  }
+  document.getElementById('labStatus').textContent = 'Trạng thái: Sẵn sàng thực nghiệm';
+}
+
+function runLabAnimation(){
+  const val = document.getElementById('labSelect').value;
+  const paper = document.getElementById('litmusPaper');
+  const liq = document.getElementById('tubeLiquid');
+  const ppt = document.getElementById('tubePpt');
+  
+  document.getElementById('labStatus').textContent = 'Trang thái: Đang diễn ra phản ứng...';
+
+  if(val === 'litmus'){
+    setTimeout(() => {
+      paper.style.top = '100px'; // Nhúng giấy quỳ ẩm xuống gần hơi/dung dịch
+    }, 200);
+    setTimeout(() => {
+      paper.style.background = '#3182ce'; // Quỳ tím ẩm chuyển xanh
+      document.getElementById('labStatus').textContent = 'Hiện tượng: Giấy quỳ tím ẩm hóa xanh do tính base của methylamine!';
+    }, 1200);
+  } else if(val === 'acid'){
+    setTimeout(() => {
+      liq.style.background = 'rgba(255,255,255,.9)';
+      document.getElementById('labStatus').textContent = 'Hiện tượng: Dung dịch chuyển trong suốt do tạo muối tan!';
+    }, 1000);
+  } else if(val === 'copper'){
+    setTimeout(() => {
+      liq.className = 'tube-liquid litmus-blue';
+      document.getElementById('labStatus').textContent = 'Hiện tượng: Xuất hiện kết tủa xanh sau đó tan tạo phức màu xanh lam thẫm!';
+    }, 1000);
+  } else if(val === 'bromine'){
+    setTimeout(() => {
+      liq.style.background = 'rgba(240,240,240,.9)';
+      ppt.className = 'precipitate on';
+      document.getElementById('labStatus').textContent = 'Hiện tượng: Nước bromine mất màu và xuất hiện kết tủa trắng!';
+    }, 1000);
+  }
+}
+
+// Hệ thống 4 câu hỏi bài tập yêu cầu
+const questions = [
+  {
+    q: "Câu 1. Dung dịch chất nào sau đây làm quỳ tím ẩm hóa xanh?",
+    options: ["C₆H₅NH₂ (aniline)", "CH₃NH₂ (methylamine)", "NaCl", "C₆H₅OH (phenol)"],
+    answer: 1,
+    explain: "CH₃NH₂ là alkylamine có tính base mạnh hơn aniline, làm quỳ tím ẩm hóa xanh[cite: 14]."
+  },
+  {
+    q: "Câu 2. Hiện tượng xảy ra khi nhỏ nước bromine vào dung dịch aniline là gì?",
+    options: ["Tạo kết tủa màu vàng", "Xuất hiện kết tủa trắng 2,4,6-tribromoaniline", "Sủi bọt khí nitrogen", "Dung dịch chuyển sang màu đỏ hồng"],
+    answer: 1,
+    explain: "Aniline tác dụng với nước bromine tạo kết tủa trắng 2,4,6-tribromoaniline[cite: 14]."
+  },
+  {
+    q: "Câu 3. Khi cho dung dịch CuSO₄ vào ống nghiệm chứa methylamine đến dư, hiện tượng quan sát được là:",
+    options: ["Chỉ có kết tủa màu xanh nhạt không tan", "Xuất hiện kết tủa xanh nhạt sau đó tan tạo dung dịch phức màu xanh lam", "Xuất hiện kết tủa nâu đỏ", "Không có hiện tượng gì xảy ra"],
+    answer: 1,
+    explain: "Ban đầu tạo kết tủa Cu(OH)₂ xanh nhạt, sau đó kết tủa tan trong methylamine dư tạo dung dịch phức chất màu xanh lam[cite: 14, 15]."
+  },
+  {
+    q: "Câu 4. Cho các chất sau: CH₃NH₂, C₆H₅NH₂, NH₃, (CH₃)₂NH. Thứ tự lực base giảm dần đúng là:",
+    options: [
+      "(CH₃)₂NH > CH₃NH₂ > NH₃ > C₆H₅NH₂",
+      "C₆H₅NH₂ > NH₃ > CH₃NH₂ > (CH₃)₂NH",
+      "CH₃NH₂ > (CH₃)₂NH > C₆H₅NH₂ > NH₃",
+      "NH₃ > CH₃NH₂ > (CH₃)₂NH > C₆H₅NH₂"
+    ],
+    answer: 0,
+    explain: "Gốc alkyl đẩy electron làm tăng mật độ electron ở N nên lực base tăng, gốc phenyl hút electron làm giảm tính base[cite: 14]."
+  }
+];
+
+let userAnswers = {};
+function renderQuiz(){
+  let html = "";
+  questions.forEach((item, idx) => {
+    html += `<div style="margin-bottom:20px; padding:15px; border:1px solid var(--line); border-radius:10px;">
+      <p><strong>${item.q}</strong></p>`;
+    item.options.forEach((opt, oIdx) => {
+      html += `<button class="quiz-opt" id="q${idx}_opt${oIdx}" onclick="checkAnswer(${idx}, ${oIdx})">${String.fromCharCode(65+oIdx)}. ${opt}</button>`;
+    });
+    html += `<div id="q${idx}_exp" style="margin-top:8px; font-size:0.9rem; color:var(--muted); display:none;"></div></div>`;
+  });
+  document.getElementById('quizContainer').innerHTML = html;
+}
+
+function checkAnswer(qIdx, oIdx){
+  const item = questions[qIdx];
+  userAnswers[qIdx] = oIdx;
+  
+  item.options.forEach((_, i) => {
+    const btn = document.getElementById(`q${qIdx}_opt${i}`);
+    btn.disabled = true;
+    if(i === item.answer) btn.classList.add('correct');
+    else if(i === oIdx) btn.classList.add('incorrect');
+  });
+
+  const expDiv = document.getElementById(`q${qIdx}_exp`);
+  expDiv.style.display = 'block';
+  expDiv.innerHTML = `<strong>Giải thích:</strong> ${item.explain}`;
+
+  // Kiểm tra hoàn thành tất cả
+  if(Object.keys(userAnswers).length === questions.length){
+    let score = 0;
+    questions.forEach((q, i) => { if(userAnswers[i] === q.answer) score++; });
+    document.getElementById('quizResult').textContent = `Kết quả hoàn thành: ${score} / ${questions.length} câu đúng.`;
+  }
+}
+
+updateLab();
+renderQuiz();
+</script>
+</body>
+</html>
